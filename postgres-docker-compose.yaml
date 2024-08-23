@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgis/postgis:latest
+    restart: always
+    container_name: postgres-core-local
+    networks:
+      - pg_network
+    environment:
+      POSTGRES_DB: coredb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admintest@123
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pg-data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin-core-local
+    networks:
+      - pg_network
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@test.com
+      PGADMIN_DEFAULT_PASSWORD: admintest@123
+    ports:
+      - "8081:80"
+    depends_on:
+      - postgres
+
+networks:
+  pg_network:
+    name: pg_network
+    driver: bridge

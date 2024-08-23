@@ -1,0 +1,4 @@
+data/*
+pg-data/*
+rabbitmq_data/*
+rabbitmq_logs/*

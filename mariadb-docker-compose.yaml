@@ -1,0 +1,84 @@
+# version: '3'
+
+# services:
+#   mariadb:
+#     image: mariadb:latest
+#     restart: always
+#     container_name: mariadb-core-local
+#     networks:
+#       - db_network
+#     environment:
+#       MYSQL_ROOT_PASSWORD: admintest
+#       MYSQL_DATABASE: coredb
+#       MYSQL_USER: admin
+#       MYSQL_PASSWORD: admintest
+#     ports:
+#       - "3306:3306"
+#     volumes:
+#       - ./data:/var/lib/mysql
+
+#   phpmyadmin:
+#     image: phpmyadmin/phpmyadmin
+#     container_name: phpmyadmin-core-local
+#     networks:
+#       - db_network
+#     restart: always
+#     environment:
+#       PMA_HOST: mariadb
+#       PMA_USER: admin
+#       PMA_PASSWORD: admintest
+#     ports:
+#       - "8080:80"
+#     depends_on:
+#       - mariadb
+
+# networks:
+#   db_network:
+#     name: db_network
+#     driver: bridge
+
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    restart: always
+    container_name: mysql-core-local
+    networks:
+      - db_network
+    environment:
+      MYSQL_ROOT_PASSWORD: admintest
+      MYSQL_DATABASE: coredb
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admintest
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin-core-local
+    networks:
+      - db_network
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: admin
+      PMA_PASSWORD: admintest
+    ports:
+      - "8080:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+networks:
+  db_network:
+    name: db_network
+    driver: bridge
